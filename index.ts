@@ -9,10 +9,10 @@
 var SSR_NODE = 1;
 var TEXT_NODE = 3;
 var EMPTY_OBJ = {};
-var EMPTY_ARR = [];
+var EMPTY_ARR: any = [];
 var SVG_NS = "http://www.w3.org/2000/svg";
 
-var id = (a) => a;
+var id = (a: any) => a;
 var map = EMPTY_ARR.map;
 var isArray = Array.isArray;
 var enqueue =
@@ -20,7 +20,7 @@ var enqueue =
     ? requestAnimationFrame
     : setTimeout;
 
-var createClass = (obj) => {
+var createClass = (obj: any) => {
   var out = "";
 
   if (typeof obj === "string") return obj;
@@ -32,6 +32,7 @@ var createClass = (obj) => {
       }
     }
   } else {
+    // @ts-expect-error ts-migrate(2403) FIXME: Subsequent variable declarations must have the sam... Remove this comment to see the full error message
     for (var k in obj) {
       if (obj[k]) out += (out && " ") + k;
     }
@@ -40,14 +41,14 @@ var createClass = (obj) => {
   return out;
 };
 
-var shouldRestart = (a, b) => {
+var shouldRestart = (a: any, b: any) => {
   for (var k in { ...a, ...b }) {
     if (typeof (isArray((b[k] = a[k])) ? b[k][0] : b[k]) === "function") {
     } else if (a[k] !== b[k]) return true;
   }
 };
 
-var patchSubs = (oldSubs, newSubs, dispatch) => {
+var patchSubs = (oldSubs: any, newSubs: any, dispatch: any) => {
   for (
     var subs = [], i = 0, oldSub, newSub;
     i < oldSubs.length || i < newSubs.length;
@@ -74,9 +75,9 @@ var patchSubs = (oldSubs, newSubs, dispatch) => {
   return subs;
 };
 
-var getKey = (vdom) => (vdom == null ? vdom : vdom.key);
+var getKey = (vdom: any) => vdom == null ? vdom : vdom.key;
 
-var patchProperty = (node, key, oldValue, newValue, listener, isSvg) => {
+var patchProperty = (node: any, key: any, oldValue: any, newValue: any, listener: any, isSvg: any) => {
   if (key === "key") {
   } else if (key === "style") {
     for (var k in { ...oldValue, ...newValue }) {
@@ -106,7 +107,7 @@ var patchProperty = (node, key, oldValue, newValue, listener, isSvg) => {
   }
 };
 
-var createNode = (vdom, listener, isSvg) => {
+var createNode = (vdom: any, listener: any, isSvg: any) => {
   var props = vdom.props;
   var node =
     vdom.tag === TEXT_NODE
@@ -122,6 +123,7 @@ var createNode = (vdom, listener, isSvg) => {
   for (var i = 0; i < vdom.children.length; i++) {
     node.appendChild(
       createNode(
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
         (vdom.children[i] = maybeVNode(vdom.children[i])),
         listener,
         isSvg
@@ -132,7 +134,7 @@ var createNode = (vdom, listener, isSvg) => {
   return (vdom.node = node);
 };
 
-var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
+var patch = (parent: any, node: any, oldVNode: any, newVNode: any, listener: any, isSvg: any) => {
   if (oldVNode === newVNode) {
   } else if (
     oldVNode != null &&
@@ -142,6 +144,7 @@ var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
     if (oldVNode.type !== newVNode.type) node.nodeValue = newVNode.type;
   } else if (oldVNode == null || oldVNode.type !== newVNode.type) {
     node = parent.insertBefore(
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
       createNode((newVNode = maybeVNode(newVNode)), listener, isSvg),
       node
     );
@@ -224,6 +227,7 @@ var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
       while (newHead <= newTail) {
         node.insertBefore(
           createNode(
+            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
             (newVKids[newHead] = maybeVNode(newVKids[newHead++])),
             listener,
             isSvg
@@ -236,8 +240,10 @@ var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
         node.removeChild(oldVKids[oldHead++].node);
       }
     } else {
+      // @ts-expect-error ts-migrate(2403) FIXME: Subsequent variable declarations must have the sam... Remove this comment to see the full error message
       for (var keyed = {}, newKeyed = {}, i = oldHead; i <= oldTail; i++) {
         if ((oldKey = oldVKids[i].key) != null) {
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           keyed[oldKey] = oldVKids[i];
         }
       }
@@ -249,6 +255,7 @@ var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
         );
 
         if (
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           newKeyed[oldKey] ||
           (newKey != null && newKey === getKey(oldVKids[oldHead + 1]))
         ) {
@@ -282,9 +289,11 @@ var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
               listener,
               isSvg
             );
+            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             newKeyed[newKey] = true;
             oldHead++;
           } else {
+            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             if ((tmpVKid = keyed[newKey]) != null) {
               patch(
                 node,
@@ -294,6 +303,7 @@ var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
                 listener,
                 isSvg
               );
+              // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
               newKeyed[newKey] = true;
             } else {
               patch(
@@ -317,7 +327,9 @@ var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
       }
 
       for (var i in keyed) {
+        // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
         if (newKeyed[i] == null) {
+          // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
           node.removeChild(keyed[i].node);
         }
       }
@@ -327,12 +339,12 @@ var patch = (parent, node, oldVNode, newVNode, listener, isSvg) => {
   return (newVNode.node = node);
 };
 
-var propsChanged = (a, b) => {
+var propsChanged = (a: any, b: any) => {
   for (var k in a) if (a[k] !== b[k]) return true;
   for (var k in b) if (a[k] !== b[k]) return true;
 };
 
-var maybeVNode = (newVNode, oldVNode) =>
+var maybeVNode = (newVNode: any, oldVNode: any) =>
   newVNode !== true && newVNode !== false && newVNode
     ? typeof newVNode.tag === "function"
       ? ((!oldVNode ||
@@ -341,21 +353,21 @@ var maybeVNode = (newVNode, oldVNode) =>
           ((oldVNode = newVNode.tag(newVNode.memo)).memo = newVNode.memo),
         oldVNode)
       : newVNode
-    : text("");
+    : // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+      text("");
 
-var recycleNode = (node) =>
-  node.nodeType === TEXT_NODE
-    ? text(node.nodeValue, node)
-    : createVNode(
-        node.nodeName.toLowerCase(),
-        EMPTY_OBJ,
-        map.call(node.childNodes, recycleNode),
-        node,
-        null,
-        SSR_NODE
-      );
+var recycleNode = (node: any) => node.nodeType === TEXT_NODE
+  ? text(node.nodeValue, node)
+  : createVNode(
+      node.nodeName.toLowerCase(),
+      EMPTY_OBJ,
+      map.call(node.childNodes, recycleNode),
+      node,
+      null,
+      SSR_NODE
+    );
 
-var createVNode = (type, props, children, node, key, tag) => ({
+var createVNode = (type: any, props: any, children: any, node: any, key: any, tag: any) => ({
   type,
   props,
   children,
@@ -364,12 +376,13 @@ var createVNode = (type, props, children, node, key, tag) => ({
   tag,
 });
 
-export var memo = (tag, memo) => ({ tag, memo });
+export var memo = (tag: any, memo: any) => ({ tag, memo });
 
-export var text = (value, node) =>
+export var text = (value: any, node: any) =>
   createVNode(value, EMPTY_OBJ, EMPTY_ARR, node, null, TEXT_NODE);
 
-export var h = (type, props, children) =>
+export var h = (type: any, props: any, children: any) =>
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 6 arguments, but got 5.
   createVNode(
     type,
     props,
@@ -378,26 +391,27 @@ export var h = (type, props, children) =>
     props.key
   );
 
-export var app = (props) => {
+export var app = (props: any) => {
   var view = props.view;
   var node = props.node;
   var subscriptions = props.subscriptions;
   var vdom = node && recycleNode(node);
-  var subs = [];
-  var doing;
-  var state;
+  var subs: any = [];
+  var doing: any;
+  var state: any;
 
-  var setState = (newState) => {
+  var setState = (newState: any) => {
     if (state !== newState) {
       state = newState;
       if (subscriptions) {
         subs = patchSubs(subs, subscriptions(state), dispatch);
       }
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
       if (view && !doing) enqueue(render, (doing = true));
     }
   };
 
-  var dispatch = (props.middleware || id)((action, props) =>
+  var dispatch = (props.middleware || id)((action: any, props: any) =>
     typeof action === "function"
       ? dispatch(action(state, props))
       : isArray(action)
@@ -412,7 +426,8 @@ export var app = (props) => {
       : setState(action)
   );
 
-  var listener = function (event) {
+  var listener = function (event: any) {
+    // @ts-expect-error ts-migrate(2683) FIXME: 'this' implicitly has type 'any' because it does n... Remove this comment to see the full error message
     dispatch(this.tag[event.type], event);
   };
 
